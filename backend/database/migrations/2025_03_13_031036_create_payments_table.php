@@ -20,6 +20,9 @@ return new class extends Migration
             $table->enum('status', ['paid', 'unpaid']);
             $table->date('billing_period')->notNull();
             $table->timestamps();
+
+            $table->foreign('id_resident_history')->references('id')->on('resident_histories');
+            $table->foreign('id_services')->references('id')->on('services');
         });
     }
 

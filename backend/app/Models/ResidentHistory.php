@@ -6,9 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Expenses extends Model
+class ResidenHistory extends Model
 {
-    //
     use HasFactory, SoftDeletes;
 
     // Nama kolom primary key yang digunakan oleh model ini
@@ -21,13 +20,10 @@ class Expenses extends Model
     // Menonaktifkan auto-increment untuk primary key
     public $incrementing = false;
 
-    // Kolom-kolom yang boleh diisi
     protected $fillable = [
-        'id',
-        'description',
-        'expense_date',
-        'expense_total',
-        'id_admin',
-        'id_services',
+        'id_resident',
+        'id_house',
+        'date_filled',
+        'date_out',
     ];
 }

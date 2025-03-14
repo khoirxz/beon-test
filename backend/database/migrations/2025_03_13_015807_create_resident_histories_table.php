@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('residen_histories', function (Blueprint $table) {
+        Schema::create('resident_histories', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('id_resident')->notNullable();
             $table->uuid('id_house')->notNullable();
             $table->date('date_filled')->notNullable();
             $table->date('date_out')->nullable();
+            $table->softDeletes();
             $table->timestamps();
 
 
