@@ -38,18 +38,27 @@ class HouseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(House $house)
+    public function show(string $id)
     {
         //
+        $house = House::findOrFail($id);
         return response()->json($house);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, House $house)
+    public function update(Request $request, string $id)
     {
         //
+        $house = House::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required',
+            'description' => 'required',
+            'status' => 'required',
+        ]);
+
         $house->update($request->all());
         return response()->json($house);
     }
@@ -57,9 +66,10 @@ class HouseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(House $house)
+    public function destroy(string $id)
     {
         //
+        $house = House::findOrFail($id);
         $house->delete();
         return response()->json(null, 204);
     }
