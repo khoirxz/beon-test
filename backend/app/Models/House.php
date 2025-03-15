@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+// use illuminate\Support\Str;
 
 class House extends Model
 {
+    // karena kita menggunakan uuid, maka kita perlu mengimpor HasUuids
     //
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasUuids;
 
     // Nama kolom primary key yang digunakan oleh model ini
     protected $primaryKey = 'id';
@@ -26,4 +29,13 @@ class House extends Model
         'description',
         'status',
     ];
+
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::creating(function ($model) {
+    //         $model->id = Str::uuid();
+    //     });
+    // }
 }

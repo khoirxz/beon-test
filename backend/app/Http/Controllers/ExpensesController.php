@@ -13,7 +13,7 @@ class ExpensesController extends Controller
     public function index()
     {
         //
-        return response()->json(Expenses::all());
+        return response()->json(Expenses::latest()->get());
     }
 
     /**
@@ -23,14 +23,20 @@ class ExpensesController extends Controller
     {
         //
         $request->validate([
+            'id_admin' => 'required|uuid',
+            'id_services' => 'required|uuid',
             'description' => 'required|string|max:200',
             'expense_date' => 'required|date',
             'expense_total' => 'required|integer',
-            'id_admin' => 'required|uuid',
-            'id_services' => 'required|uuid',
         ]);
 
-        $expense = Expenses::create($request->all());
+        $expense = Expenses::create([
+            'id_admin' => $request->id_admin,
+            'id_services' => $request->id_services,
+            'description' => $request->description,
+            'expense_date' => $request->expense_date,
+            'expense_total' => $request->expense_total
+        ]);
         return response()->json($expense);
     }
 
@@ -60,7 +66,14 @@ class ExpensesController extends Controller
             'id_services' => 'required|uuid',
         ]);
 
-        $expense->update($request->all());
+        $expense->update([
+            'description' => $request->description,
+            'expense_date' => $request->expense_date,
+            'expense_total' => $request->expense_total,
+            'id_admin' => $request->id_admin,
+            'id_services' => $request->id_services
+        ]);
+
         return response()->json($expense);
     }
 

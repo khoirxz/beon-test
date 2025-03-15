@@ -13,7 +13,7 @@ class ResidentHistoryController extends Controller
     public function index()
     {
         //
-        return response()->json(ResidentHistory::all());
+        return response()->json(ResidentHistory::latest()->get());
     }
 
     /**
@@ -26,10 +26,15 @@ class ResidentHistoryController extends Controller
             'id_resident' => 'required|exists:residents,id',
             'id_house' => 'required|exists:houses,id',
             'date_filled' => 'required|date',
-            'date_out' => 'required|date',
+            'date_out' => 'date|nullable',
         ]);
 
-        $residentHistory = ResidentHistory::create($request->all());
+        $residentHistory = ResidentHistory::create([
+            'id_resident' => $request->id_resident,
+            'id_house' => $request->id_house,
+            'date_filled' => $request->date_filled,
+            'date_out' => $request->date_out
+        ]);
         return response()->json($residentHistory);
     }
 

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->char('name', 50)->notNullable();
             $table->string('description', 200);
-            $table->enum('status', ['available', 'occupied']);
+            $table->enum('status', ['available', 'occupied'])->default('available');
             //soft delete
             $table->softDeletes();
             $table->timestamps();

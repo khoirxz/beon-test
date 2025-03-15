@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Resident;
+// use Illuminate\Validation\Rules\Enum;
+// use App\enums\ResidentStatus;
+use Illuminate\Support\Facades\Storage;
+
 
 class ResidentController extends Controller
 {
@@ -22,15 +26,32 @@ class ResidentController extends Controller
     public function store(Request $request)
     {
         //
+
         $request->validate([
             'name' => 'required|string|max:100',
-            'photo_id' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'resident_status' => 'required|enum:contract,permanent',
+            'photo_id' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            // 'resident_status' => [new Enum(ResidentStatus::class)],
+            'resident_status' => 'required|string|in:contract,permanent',
             'phone' => 'required|string|max:50',
-            'married_status' => 'required|boolean',
+            'married_status' => 'boolean',
         ]);
 
-        $resident = Resident::create($request->all());
+        // saving the image to storage
+        if ($request->hasFile('photo_id')) {
+            $photo_id = $request->file('photo_id')->store('images', 'public');
+            if (!$photo_id) {
+                return response()->json(['error' => 'Failed to upload photo'], 500);
+            }
+        }
+
+        $resident = Resident::create([
+            'name' => $request->name,
+            'photo_id' => $photo_id,
+            'resident_status' => $request->resident_status,
+            'phone' => $request->phone,
+            'married_status' => $request->married_status
+        ]);
+
         return response()->json($resident);
     }
 
@@ -49,18 +70,40 @@ class ResidentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // remember when using method PUT or PATCH, you should add "_method" in your form
+        // example POST : http://localhost:8000/api/residents/1
+        // add field _method=PUT
+
         $resident = Resident::findOrFail($id);
 
         $request->validate([
             'name' => 'required|string|max:100',
-            'photo_id' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'resident_status' => 'required|enum:contract,permanent',
+            'photo_id' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            // 'resident_status' => [new Enum(ResidentStatus::class)],
+            'resident_status' => 'required|string|in:contract,permanent',
             'phone' => 'required|string|max:50',
-            'married_status' => 'required|boolean',
+            'married_status' => 'boolean',
         ]);
 
-        $resident->update($request->all());
+        if ($request->hasFile('photo_id')) {
+            if ($resident->photo_id) {
+                Storage::disk('public')->delete($resident->photo_id);
+            }
+            $photo_id = $request->file('photo_id')->store('images', 'public');
+            if (!$photo_id) {
+                return response()->json(['error' => 'Failed to upload photo'], 500);
+            }
+            
+        }
+
+        $resident->update([
+            'name' => $request->name,
+            'photo_id' => $photo_id,
+            'resident_status' => $request->resident_status,
+            'phone' => $request->phone,
+            'married_status' => $request->married_status
+        ]);
+
         return response()->json($resident);
     }
 

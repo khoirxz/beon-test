@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Services extends Model
 {
     //
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasUuids;
     // Nama tabel yang digunakan oleh model ini
     protected $table = 'services';
 

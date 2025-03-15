@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('expense_total')->notNull();
             $table->uuid('id_admin')->notNull();
             $table->uuid('id_services')->notNull();
+            $table->softDeletes();
             $table->timestamps();
             
             $table->foreign('id_admin')->references('id')->on('users');

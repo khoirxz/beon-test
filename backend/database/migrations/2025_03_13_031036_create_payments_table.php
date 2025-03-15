@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('payment_date')->notNull();
             $table->integer('total_payment')->notNull();
             $table->enum('status', ['paid', 'unpaid']);
-            $table->date('billing_period')->notNull();
+            $table->string('billing_period', 7)->notNull();
             $table->timestamps();
 
             $table->foreign('id_resident_history')->references('id')->on('resident_histories');

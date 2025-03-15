@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Payment;
+use Illuminate\Validation\Rules\Enum;
+use App\enums\StatusPayment;
 
 class PaymentController extends Controller
 {
@@ -27,11 +29,21 @@ class PaymentController extends Controller
             'id_services' => 'required|exists:services,id',
             'payment_date' => 'required|date',
             'total_payment' => 'required|integer',
-            'status' => 'required|enum:paid,unpaid',
-            'billing_period' => 'required|date',
+            'status' => [new Enum(StatusPayment::class)],
+            'billing_period' => 'required|string',
         ]);
 
-        $payment = Payment::create($request->all());
+        $payment = Payment::create([
+            'id_resident_history' => $request->id_resident_history,
+            'id_services' => $request->id_services,
+            'payment_date' => $request->payment_date,
+            'total_payment' => $request->total_payment,
+            'status' => $request->status,
+            // input dari frontend adalah YYYY-MM-DD
+            // jadi kita mengkonfersikan ke YYYY-MM
+            'billing_period' => date('Y-m', strtotime($request->billing_period)),
+        ]);
+
         return response()->json($payment);
     }
 
@@ -58,11 +70,21 @@ class PaymentController extends Controller
             'id_services' => 'required|exists:services,id',
             'payment_date' => 'required|date',
             'total_payment' => 'required|integer',
-            'status' => 'required|enum:paid,unpaid',
-            'billing_period' => 'required|date',
+            'status' => [new Enum(StatusPayment::class)],
+            'billing_period' => 'required|string',
         ]);
 
-        $payment->update($request->all());
+        $payment->update([
+            'id_resident_history' => $request->id_resident_history,
+            'id_services' => $request->id_services,
+            'payment_date' => $request->payment_date,
+            'total_payment' => $request->total_payment,
+            'status' => $request->status,
+            // input dari frontend adalah YYYY-MM-DD
+            // jadi kita mengkonfersikan ke YYYY-MM
+            'billing_period' => date('Y-m', strtotime($request->billing_period)),
+        ]);
+        
         return response()->json($payment);
     }
 

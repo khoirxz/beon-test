@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Services;
+use Illuminate\Validation\Rules\Enum;
+use App\enums\PeriodServices;
+use App\enums\TypeServices;
 
 class ServicesController extends Controller
 {
@@ -22,15 +25,22 @@ class ServicesController extends Controller
     public function store(Request $request)
     {
         //
-        $validate = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:100',
             'description' => 'required|string|max:200',
             'price' => 'required|integer',
-            'period' => 'required|enum:weekly,monthly,annual,once',
-            'type' => 'required|enum:expense,income',
+            'period' => [new Enum(PeriodServices::class)],
+            'type' => [new Enum(TypeServices::class)],
         ]);
 
-        $service = Services::create($request->all());
+        $service = Services::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'period' => $request->period,
+            'type' => $request->type
+        ]);
+
         return response()->json($service);
     }
 
@@ -56,11 +66,18 @@ class ServicesController extends Controller
             'name' => 'required|string|max:100',
             'description' => 'required|string|max:200',
             'price' => 'required|integer',
-            'period' => 'required|enum:weekly,monthly,annual,once',
-            'type' => 'required|enum:expense,income',
+            'period' => [new Enum(PeriodServices::class)],
+            'type' => [new Enum(TypeServices::class)],
         ]);
 
-        $service->update($request->all());
+        $service->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'period' => $request->period,
+            'type' => $request->type
+        ]);
+        
         return response()->json($service);
     }
 

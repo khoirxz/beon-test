@@ -24,7 +24,7 @@ class HouseController extends Controller
         //
         // filter the request
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:houses,name',
             'description' => 'required',
             'status' => 'required',
         ]);
@@ -54,7 +54,7 @@ class HouseController extends Controller
         $house = House::findOrFail($id);
 
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|unique:houses,name,' . $id,
             'description' => 'required',
             'status' => 'required',
         ]);
