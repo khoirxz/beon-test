@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
@@ -54,7 +55,11 @@ const PaymentList = () => {
           <Typography variant="body2">Daftar semua pembayaran</Typography>
         </div>
         <div>
-          <Button variant="contained">Tambah</Button>
+          <Link
+            to="/payment/form"
+            style={{ textDecoration: "none", color: "inherit" }}>
+            <Button variant="contained">Tambah</Button>
+          </Link>
         </div>
       </Stack>
 

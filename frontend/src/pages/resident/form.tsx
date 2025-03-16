@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { useParams, Link } from "react-router";
 
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
@@ -12,11 +15,15 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import Snackbar from "@mui/material/Snackbar";
 
 import { MuiTelInput } from "mui-tel-input";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 import Layout from "../../layout/layout";
+import api from "../../api";
+import { RootState } from "../../store";
+import { Resident } from "../../interfaces/Resident";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -36,17 +43,91 @@ const ResidentForm = () => {
   const [residentStatus, setResidentStatus] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [marriedStatus, setMarriedStatus] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const authState = useSelector((state: RootState) => state.auth);
+  const { id } = useParams<string>();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get<Resident>(`residents/${id}`, {
+          headers: {
+            Authorization: `Bearer ${authState.token}`,
+          },
+        });
+        setName(response.data.name);
+        // setPhotoId(response.data.photo_id);
+        setResidentStatus(response.data.resident_status);
+        setPhone(response.data.phone);
+        setMarriedStatus(response.data.married_status === 1 ? true : false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (id) {
+      fetchData();
+    }
+  }, [id, authState.token]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    console.log({
-      name,
-      photoId,
-      residentStatus,
-      phone,
-      marriedStatus,
-    });
+    // karena form menggunakan gambar/file
+    // kita menggunakan form data
+    const formData = new FormData();
+    formData.append("name", name);
+
+    // jika photo id ada, tambahkan ke form data
+    if (photoId) {
+      formData.append("photo_id", photoId);
+    }
+
+    formData.append("resident_status", residentStatus);
+    formData.append("phone", phone);
+    formData.append("married_status", marriedStatus ? "1" : "0");
+
+    if (id) {
+      formData.append("_method", "PUT");
+    }
+
+    let response;
+    if (!id && !photoId) {
+      setOpen(true);
+      setMessage("Photo ID is required");
+      return;
+    }
+    try {
+      if (id) {
+        response = await api.post(`residents/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${authState.token}`,
+          },
+        });
+      } else {
+        response = await api.post("residents", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${authState.token}`,
+          },
+        });
+      }
+
+      if (response?.status === 201) {
+        setOpen(true);
+        setMessage("Penduduk berhasil ditambahkan");
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.data) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Terjadi kesalahan");
+      }
+      setOpen(true);
+    }
   };
 
   return (
@@ -57,11 +138,17 @@ const ResidentForm = () => {
         alignItems="center"
         mb={5}>
         <div>
-          <Typography variant="h5">Form Tambah Penduduk</Typography>
+          <Typography variant="h5">
+            Form {id ? "Edit" : "Tambah"} Penduduk
+          </Typography>
           <Typography variant="body2">Isi detail dibawah ini</Typography>
         </div>
         <div>
-          <Button variant="contained">Kembali</Button>
+          <Link
+            to="/resident"
+            style={{ textDecoration: "none", color: "inherit" }}>
+            <Button variant="contained">Kembali</Button>
+          </Link>
         </div>
       </Stack>
       <Card sx={{ p: 4 }}>
@@ -110,7 +197,6 @@ const ResidentForm = () => {
 
             <FormControl fullWidth>
               <FormControlLabel
-                required
                 control={
                   <Checkbox
                     id="status-married"
@@ -130,6 +216,12 @@ const ResidentForm = () => {
           </Stack>
         </form>
       </Card>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={() => setOpen(false)}
+        message={message}
+      />
     </Layout>
   );
 };

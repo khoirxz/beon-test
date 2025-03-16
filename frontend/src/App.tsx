@@ -4,9 +4,11 @@ import DashboardPage from "./pages/dashboard";
 import ResidentList from "./pages/resident";
 import ResidentForm from "./pages/resident/form";
 import ResidenHistorytList from "./pages/resident-history";
+import ResidentHistoryForm from "./pages/resident-history/form";
 import HouseList from "./pages/house";
 import HouseForm from "./pages/house/form";
 import PaymentList from "./pages/payment";
+import PaymentForm from "./pages/payment/form";
 import ServicesList from "./pages/services";
 import ServiceForm from "./pages/services/form";
 import InvoiceList from "./pages/invoice";
@@ -49,12 +51,42 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/resident/form/:id",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <ResidentForm />,
+      },
+    ],
+  },
+  {
     path: "/resident-history",
     element: <ProtectedRoute />,
     children: [
       {
         path: "",
         element: <ResidenHistorytList />,
+      },
+    ],
+  },
+  {
+    path: "/resident-history/form",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <ResidentHistoryForm />,
+      },
+    ],
+  },
+  {
+    path: "/resident-history/form/:id",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <ResidentHistoryForm />,
       },
     ],
   },
@@ -95,6 +127,26 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <PaymentList />,
+      },
+    ],
+  },
+  {
+    path: "/payment/form",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <PaymentForm />,
+      },
+    ],
+  },
+  {
+    path: "/payment/form/:id",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <PaymentForm />,
       },
     ],
   },
