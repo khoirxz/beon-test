@@ -171,6 +171,16 @@ const router = createBrowserRouter([
     ],
   },
   {
+    path: "/service/form/:id",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <ServiceForm />,
+      },
+    ],
+  },
+  {
     path: "/invoice",
     element: <ProtectedRoute />,
     children: [

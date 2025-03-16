@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { Link, useParams } from "react-router";
+import dayjs from "dayjs";
 
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
@@ -13,20 +14,38 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Snackbar from "@mui/material/Snackbar";
-import Modal from "@mui/material/Modal";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
+import Autocomplete from "@mui/material/Autocomplete";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import Layout from "../../layout/layout";
 import api from "../../api";
 import { RootState } from "../../store";
-import { House } from "../../interfaces/House";
-import { Resident } from "../../interfaces/Resident";
+import { ResidentHistory } from "../../interfaces/Resident";
+import { Service } from "../../interfaces/Services";
+import { Payment } from "../../interfaces/Payment";
+
+type autoCompleteProps = {
+  id: string;
+  label: string;
+};
 
 const PaymentForm = () => {
-  const [name, setName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [dataResidentHistory, setDataResidentHistory] = useState<
+    ResidentHistory[]
+  >([]);
+  const [dataService, setDataService] = useState<Service[]>([]);
+  const [selectedResidentHistory, setSelectedResidentHistory] =
+    useState<autoCompleteProps | null>(null);
+  const [selectedService, setSelectedService] =
+    useState<autoCompleteProps | null>(null);
+  const [datePayment, setDatePayment] = useState<string>(
+    dayjs().format("YYYY-MM-DD")
+  );
+  const [totalPayment, setTotalPayment] = useState<number>(0);
   const [status, setStatus] = useState<string>("");
+  const [period, setPeriod] = useState<string>(dayjs().format("YYYY-MM-DD"));
   const [message, setMessage] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
 
@@ -38,21 +57,56 @@ const PaymentForm = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAdditionalData = async () => {
       try {
-        const { data } = await api.get<House>(`houses/${id}`, {
+        const { data: dataResidentHistory } = await api.get<ResidentHistory[]>(
+          "residents-history",
+          {
+            headers: {
+              Authorization: `Bearer ${authState.token}`,
+            },
+          }
+        );
+        const { data: dataService } = await api.get<Service[]>("services", {
           headers: {
             Authorization: `Bearer ${authState.token}`,
           },
         });
 
-        setName(data.name);
-        setDescription(data.description);
-        setStatus(data.status);
+        setDataResidentHistory(dataResidentHistory);
+        setDataService(dataService);
       } catch (error) {
         console.log(error);
       }
     };
+
+    const fetchData = async () => {
+      try {
+        const { data } = await api.get<Payment>(`payments/${id}`, {
+          headers: {
+            Authorization: `Bearer ${authState.token}`,
+          },
+        });
+
+        setSelectedResidentHistory({
+          id: data.resident_history.id,
+          label: data.resident_history.resident.name,
+        });
+        setSelectedService({
+          id: data.services.id,
+          label: data.services.name,
+        });
+        setDatePayment(data.payment_date);
+        setTotalPayment(data.total_payment);
+        setStatus(data.status);
+        setPeriod(data.billing_period);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchAdditionalData();
+
     if (id) {
       fetchData();
     }
@@ -65,11 +119,14 @@ const PaymentForm = () => {
       let response;
       if (!id) {
         response = await api.post(
-          "houses",
+          "payments",
           {
-            name,
-            description,
-            status,
+            id_resident_history: selectedResidentHistory?.id,
+            id_services: selectedService?.id,
+            payment_date: datePayment,
+            total_payment: totalPayment,
+            status: status,
+            billing_period: period,
           },
           {
             headers: {
@@ -79,11 +136,14 @@ const PaymentForm = () => {
         );
       } else {
         response = await api.put(
-          `houses/${id}`,
+          `payments/${id}`,
           {
-            name,
-            description,
-            status,
+            id_resident_history: selectedResidentHistory?.id,
+            id_services: selectedService?.id,
+            payment_date: datePayment,
+            total_payment: totalPayment,
+            status: status,
+            billing_period: period,
           },
           {
             headers: {
@@ -107,6 +167,10 @@ const PaymentForm = () => {
     }
   };
 
+  const handelPriceChange = (id: string) => {
+    setTotalPayment(dataService.find((item) => item.id === id)?.price || 0);
+  };
+
   return (
     <Layout>
       <Stack
@@ -123,7 +187,7 @@ const PaymentForm = () => {
         </div>
         <div>
           <Link
-            to="/house"
+            to="/payment"
             style={{ textDecoration: "none", color: "inherit" }}>
             <Button variant="contained">Kembali</Button>
           </Link>
@@ -132,30 +196,74 @@ const PaymentForm = () => {
       <Card sx={{ p: 4 }}>
         <form onSubmit={handleSubmit}>
           <Stack direction={"column"} gap={5}>
-            <ModalUser />
+            <SelectedAutoComplete
+              label="Pemilik"
+              data={dataResidentHistory.map((item) => ({
+                id: item.id,
+                label: item.resident.name,
+              }))}
+              selectedValue={selectedResidentHistory}
+              setSelectedValue={setSelectedResidentHistory}
+            />
+
+            <SelectedAutoComplete
+              label="Layanan"
+              data={dataService.map((item) => ({
+                id: item.id,
+                label: item.name,
+              }))}
+              selectedValue={selectedService}
+              setSelectedValue={setSelectedService}
+              customHandleChange={handelPriceChange}
+            />
+
             <FormControl fullWidth>
-              <TextField
-                id="deskripsi-rumah"
-                label="Deskripsi rumah"
-                multiline
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={4}
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Tanggal Pembayaran"
+                  defaultValue={dayjs(datePayment)}
+                  onChange={(newValue) =>
+                    setDatePayment(newValue!.format("YYYY-MM-DD"))
+                  }
+                />
+              </LocalizationProvider>
             </FormControl>
 
             <FormControl fullWidth>
-              <InputLabel id="status-label">Status Rumah</InputLabel>
+              <InputLabel id="status-label">Status tagihan</InputLabel>
               <Select
                 labelId="status-label"
                 id="status"
                 value={status}
-                label="Status Rumah"
+                label="Status tagihan"
                 onChange={handleChange}
                 defaultValue={id ? status : "available"}>
-                <MenuItem value="available">Tersedia</MenuItem>
-                <MenuItem value="occupied">Sudah Dihuni</MenuItem>
+                <MenuItem value="paid">Lunas</MenuItem>
+                <MenuItem value="unpaid">Belum Lunas</MenuItem>
               </Select>
+            </FormControl>
+
+            <FormControl fullWidth>
+              <TextField
+                id="total-payment"
+                label="Total Pembayaran"
+                type="number"
+                value={totalPayment}
+                onChange={(e) => setTotalPayment(parseInt(e.target.value))}
+              />
+            </FormControl>
+
+            <FormControl fullWidth>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  views={["year", "month"]}
+                  label="Bulan yang dibayar"
+                  defaultValue={dayjs(period)}
+                  onChange={(newValue) =>
+                    setPeriod(newValue!.format("YYYY-MM-DD"))
+                  }
+                />
+              </LocalizationProvider>
             </FormControl>
 
             <div>
@@ -176,103 +284,42 @@ const PaymentForm = () => {
   );
 };
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  borderRadius: 2,
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
-
-const ModalUser = () => {
-  const [data, setData] = useState<Resident[]>([]);
-  const [open, setOpen] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
-
-  const authState = useSelector((state: RootState) => state.auth);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get<Resident[]>(`residents/search`, {
-          params: {
-            name: search,
-          },
-          headers: {
-            Authorization: `Bearer ${authState.token}`,
-          },
-        });
-
-        setData(response.data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, [authState.token, search]);
+const SelectedAutoComplete = ({
+  label,
+  data,
+  selectedValue,
+  setSelectedValue,
+  customHandleChange,
+}: {
+  label: string;
+  data: { id: string; label: string }[];
+  selectedValue: { id: string; label: string } | null;
+  setSelectedValue: React.Dispatch<
+    React.SetStateAction<{ id: string; label: string } | null>
+  >;
+  customHandleChange?: (value: string) => void;
+}) => {
+  const [inputValue, setInputValue] = useState("");
 
   return (
-    <Box width={"100%"}>
-      <Button
-        fullWidth
-        onClick={() => setOpen(true)}
-        sx={{
-          display: "flex",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          color: "black",
-          gap: 2,
-          border: 1,
-          borderRadius: 1,
-          p: 2,
-        }}>
-        <Avatar />
-        <Typography variant="body2">Pilih User</Typography>
-      </Button>
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description">
-        <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Cari penduduk
-          </Typography>
-          <TextField
-            size="small"
-            label="Cari penduduk"
-            variant="outlined"
-            fullWidth
-            sx={{ mt: 2 }}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Box sx={{ mt: 2 }}>
-            {data.map((item) => (
-              <Button
-                onClick={() => setOpen(false)}
-                fullWidth
-                sx={{
-                  mt: 2,
-                  display: "flex",
-                  gap: 2,
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                  color: "black",
-                }}
-                key={item.id}>
-                <Avatar />
-                <Typography>{item.name}</Typography>
-              </Button>
-            ))}
-          </Box>
-        </Box>
-      </Modal>
-    </Box>
+    <FormControl fullWidth>
+      <Autocomplete
+        value={selectedValue}
+        onChange={(_, newValue) => {
+          setSelectedValue(newValue || { id: "", label: "" });
+          customHandleChange?.(newValue?.id || "");
+        }}
+        inputValue={inputValue}
+        onInputChange={(_, newInputValue) => {
+          setInputValue(newInputValue);
+        }}
+        id="controllable-states-demo"
+        options={data}
+        renderInput={(params) => (
+          <TextField {...params} label={`label ${label}`} />
+        )}
+      />
+    </FormControl>
   );
 };
 

@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { Link, useParams } from "react-router";
 
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
@@ -9,8 +12,11 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import Snackbar from "@mui/material/Snackbar";
 
 import Layout from "../../layout/layout";
+import api from "../../api";
+import { RootState } from "../../store";
 
 const ServiceForm = () => {
   const [name, setName] = useState<string>("");
@@ -18,17 +24,87 @@ const ServiceForm = () => {
   const [period, setPeriod] = useState<string>("");
   const [price, setPrice] = useState<number>(0);
   const [type, setType] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
+  const [open, setOpen] = useState<boolean>(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const authState = useSelector((state: RootState) => state.auth);
+  const { id } = useParams<string>();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await api.get(`services/${id}`, {
+          headers: {
+            Authorization: `Bearer ${authState.token}`,
+          },
+        });
+
+        setName(response.data.name);
+        setDescription(response.data.description);
+        setPeriod(response.data.period);
+        setPrice(response.data.price);
+        setType(response.data.type);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (id) {
+      fetchData();
+    }
+  }, [authState.token, id]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    console.log({
-      name,
-      description,
-      period,
-      price,
-      type,
-    });
+    try {
+      let response;
+
+      if (id) {
+        response = await api.put(
+          `services/${id}`,
+          {
+            name,
+            description,
+            period,
+            price,
+            type,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authState.token}`,
+            },
+          }
+        );
+      } else {
+        response = await api.post(
+          "services",
+          {
+            name,
+            description,
+            period,
+            price,
+            type,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authState.token}`,
+            },
+          }
+        );
+      }
+      if (response.status === 201 || response.status === 200) {
+        setMessage("Layanan berhasil ditambahkan");
+        setOpen(true);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response && error.response.data) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Terjadi kesalahan");
+      }
+      setOpen(true);
+    }
   };
 
   return (
@@ -43,7 +119,11 @@ const ServiceForm = () => {
           <Typography variant="body2">Isi detail dibawah ini</Typography>
         </div>
         <div>
-          <Button variant="contained">Kembali</Button>
+          <Link
+            to="/service"
+            style={{ textDecoration: "none", color: "inherit" }}>
+            <Button variant="contained">Kembali</Button>
+          </Link>
         </div>
       </Stack>
       <Card sx={{ p: 4 }}>
@@ -114,6 +194,12 @@ const ServiceForm = () => {
           </Stack>
         </form>
       </Card>
+      <Snackbar
+        open={open}
+        autoHideDuration={6000}
+        onClose={() => setOpen(false)}
+        message={message}
+      />
     </Layout>
   );
 };
