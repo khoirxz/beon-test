@@ -11,7 +11,8 @@ import PaymentList from "./pages/payment";
 import PaymentForm from "./pages/payment/form";
 import ServicesList from "./pages/services";
 import ServiceForm from "./pages/services/form";
-import InvoiceList from "./pages/invoice";
+import ExpenseList from "./pages/expense";
+import ExpenseForm from "./pages/expense/form";
 import LoginPage from "./pages/auth/login";
 import ProtectedRoute from "./utils/ProtectedRoute";
 
@@ -181,12 +182,32 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/invoice",
+    path: "/expense",
     element: <ProtectedRoute />,
     children: [
       {
         path: "",
-        element: <InvoiceList />,
+        element: <ExpenseList />,
+      },
+    ],
+  },
+  {
+    path: "/expense/form",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <ExpenseForm />,
+      },
+    ],
+  },
+  {
+    path: "/expense/form/:id",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <ExpenseForm />,
       },
     ],
   },

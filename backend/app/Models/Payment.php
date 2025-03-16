@@ -30,4 +30,14 @@ class Payment extends Model
         'billing_period',
     ];
 
+    public function resident_history()
+    {
+        return $this->belongsTo(ResidentHistory::class, 'id_resident_history');
+    }
+
+    public function services()
+    {
+        return $this->belongsTo(Services::class, 'id_services');
+    }
+
 }

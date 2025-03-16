@@ -92,10 +92,10 @@ const router: routerProps[] = [
   },
   {
     id: 6,
-    name: "Invoice",
-    nameRoute: "invoice",
+    name: "Expense",
+    nameRoute: "expense",
     icon: <InboxIcon />,
-    path: "/invoice",
+    path: "/expense",
   },
 ];
 

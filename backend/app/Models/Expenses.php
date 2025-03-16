@@ -31,4 +31,14 @@ class Expenses extends Model
         'id_admin',
         'id_services',
     ];
+
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'id_admin', 'id');
+    }
+
+    public function services()
+    {
+        return $this->belongsTo(Services::class, 'id_services', 'id');
+    }
 }

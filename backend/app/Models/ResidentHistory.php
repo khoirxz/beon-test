@@ -27,4 +27,14 @@ class ResidentHistory extends Model
         'date_filled',
         'date_out',
     ];
+
+    public function resident() 
+    {
+        return $this->belongsTo(resident::class, 'id_resident');
+    }
+
+    public function house()
+    {
+        return $this->belongsTo(house::class, 'id_house');
+    }
 }

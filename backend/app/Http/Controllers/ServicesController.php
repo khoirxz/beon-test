@@ -16,7 +16,7 @@ class ServicesController extends Controller
     public function index()
     {
         //
-        return response()->json(Services::all());
+        return response()->json(Services::latest()->get(), 200);
     }
 
     /**
@@ -41,7 +41,7 @@ class ServicesController extends Controller
             'type' => $request->type
         ]);
 
-        return response()->json($service);
+        return response()->json($service, 201);
     }
 
     /**
@@ -51,7 +51,7 @@ class ServicesController extends Controller
     {
         //
         $service = Services::findOrFail($id);
-        return response()->json($service);
+        return response()->json($service, 200);
     }
 
     /**
@@ -78,7 +78,7 @@ class ServicesController extends Controller
             'type' => $request->type
         ]);
         
-        return response()->json($service);
+        return response()->json($service, 200);
     }
 
     /**

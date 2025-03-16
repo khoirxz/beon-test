@@ -13,7 +13,7 @@ class HouseController extends Controller
     public function index()
     {
         //
-        return response()->json(House::all());
+        return response()->json(House::whereNull('deleted_at')->latest()->get(), 200);
     }
 
     /**
@@ -31,7 +31,7 @@ class HouseController extends Controller
 
 
         $house = House::create($request->all());
-        return response()->json($house);
+        return response()->json($house, 201);
     }
 
 
@@ -42,7 +42,7 @@ class HouseController extends Controller
     {
         //
         $house = House::findOrFail($id);
-        return response()->json($house);
+        return response()->json($house, 200);
     }
 
     /**
@@ -60,7 +60,7 @@ class HouseController extends Controller
         ]);
 
         $house->update($request->all());
-        return response()->json($house);
+        return response()->json($house, 200);
     }
 
     /**

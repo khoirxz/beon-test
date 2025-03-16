@@ -13,7 +13,7 @@ class ExpensesController extends Controller
     public function index()
     {
         //
-        return response()->json(Expenses::latest()->get());
+        return response()->json(Expenses::with('admin', 'services')->whereNull('deleted_at')->latest()->get(), 200);
     }
 
     /**
@@ -37,7 +37,7 @@ class ExpensesController extends Controller
             'expense_date' => $request->expense_date,
             'expense_total' => $request->expense_total
         ]);
-        return response()->json($expense);
+        return response()->json($expense, 201);
     }
 
     /**
@@ -46,8 +46,8 @@ class ExpensesController extends Controller
     public function show(string $id)
     {
         //
-        $expense = Expenses::findOrFail($id);
-        return response()->json($expense);
+        $expense = Expenses::findOrFail($id)->with('services')->whereNull('deleted_at')->first();
+        return response()->json($expense, 200);
     }
 
     /**
@@ -74,7 +74,7 @@ class ExpensesController extends Controller
             'id_services' => $request->id_services
         ]);
 
-        return response()->json($expense);
+        return response()->json($expense, 200);
     }
 
     /**

@@ -4,7 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Passport\Passport;
+
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,9 +23,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        Passport::loadKeysFrom(__DIR__.'/../storage/oauth2');
-        
-    }
 
-    
+    }
 }

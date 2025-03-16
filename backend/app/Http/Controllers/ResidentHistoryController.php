@@ -13,7 +13,7 @@ class ResidentHistoryController extends Controller
     public function index()
     {
         //
-        return response()->json(ResidentHistory::latest()->get());
+        return response()->json(ResidentHistory::with(['resident', 'house'])->whereNull('deleted_at')->latest()->get(), 200);
     }
 
     /**
@@ -35,7 +35,7 @@ class ResidentHistoryController extends Controller
             'date_filled' => $request->date_filled,
             'date_out' => $request->date_out
         ]);
-        return response()->json($residentHistory);
+        return response()->json($residentHistory, 201);
     }
 
     /**
@@ -44,7 +44,7 @@ class ResidentHistoryController extends Controller
     public function show(string $id)
     {
         //
-        $residentHistory = ResidentHistory::findOrFail($id);
+        $residentHistory = ResidentHistory::findOrFail($id)->with(['resident', 'house'])->whereNull('deleted_at')->first();
         return response()->json($residentHistory);
     }
 
@@ -55,7 +55,8 @@ class ResidentHistoryController extends Controller
     {
         //
         $residentHistory = ResidentHistory::findOrFail($id);
-
+        // debug
+        // return response()->json($request->all());
         $request->validate([
             'id_resident' => 'required|exists:residents,id',
             'id_house' => 'required|exists:houses,id',
@@ -64,7 +65,7 @@ class ResidentHistoryController extends Controller
         ]);
 
         $residentHistory->update($request->all());
-        return response()->json($residentHistory);
+        return response()->json($residentHistory, 200);
     }
 
     /**

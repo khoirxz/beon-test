@@ -15,7 +15,7 @@ class PaymentController extends Controller
     public function index()
     {
         //
-        return response()->json(Payment::all());
+        return response()->json(Payment::with('resident_history.resident','resident_history.house', 'services')->latest()->get(), 200);
     }
 
     /**
@@ -44,7 +44,7 @@ class PaymentController extends Controller
             'billing_period' => date('Y-m', strtotime($request->billing_period)),
         ]);
 
-        return response()->json($payment);
+        return response()->json($payment, 201);
     }
 
     /**
@@ -53,8 +53,8 @@ class PaymentController extends Controller
     public function show(string $id)
     {
         //
-        $payment = Payment::findOrFail($id);
-        return response()->json($payment);
+        $payment = Payment::findOrFail($id)->with('resident_history.resident','resident_history.house', 'services')->first();
+        return response()->json($payment, 200);
     }
 
     /**
@@ -85,7 +85,7 @@ class PaymentController extends Controller
             'billing_period' => date('Y-m', strtotime($request->billing_period)),
         ]);
         
-        return response()->json($payment);
+        return response()->json($payment, 200);
     }
 
     /**
