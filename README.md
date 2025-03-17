@@ -23,7 +23,7 @@ kemudian masuk ke folder beon-test dan lakukan perintah berikut
 composer install
 ```
 
-link storage
+link storage untuk penyimpanan file
 
 ```bash
 php artisan storage:link
