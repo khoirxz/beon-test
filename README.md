@@ -4,6 +4,7 @@
 
 Saya menggunakan Laravel 12(PHP 8.4) dan NodeJS Versi 22 untuk membuat aplikasi ini.
 Untuk database saya menggunakan MYSQL versi 5.7
+_Pastikan ekstensi PHP Sodium sudah diaktifkan_
 
 Sebelum proses instalasi, pastikan sudah terinstall PHP dan NodeJS dengan versi yang sesuai.
 
@@ -64,3 +65,17 @@ Kemudian jalankan perintah berikut untuk menjalankan frontend
 ```bash
 npm run dev
 ```
+
+# Menu dan Fitur
+
+## Menu Utama
+
+- Menu Utama
+  - Dashboard
+  - Penduduk
+  - Layanan
+  - Manajemen Kependudukan
+  - Rumah
+  - Pemasukan
+  - Pengeluaran
+  - Report tahunan dan bulanan
