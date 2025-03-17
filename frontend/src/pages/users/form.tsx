@@ -8,21 +8,19 @@ import Stack from "@mui/material/Stack";
 import Card from "@mui/material/Card";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Snackbar from "@mui/material/Snackbar";
 
 import Layout from "../../layout/layout";
 import api from "../../api";
 import { RootState } from "../../store";
-import { House } from "../../interfaces/House";
+import { User } from "../../interfaces/User";
 
-const HouseForm = () => {
+const UsersForm = () => {
   const [name, setName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [status, setStatus] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -30,23 +28,19 @@ const HouseForm = () => {
   const authState = useSelector((state: RootState) => state.auth);
   const { id } = useParams<string>();
 
-  const handleChange = (event: SelectChangeEvent<string>) => {
-    setStatus(event.target.value);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const { data } = await api.get<House>(`houses/${id}`, {
+        const { data } = await api.get<User>(`users/${id}`, {
           headers: {
             Authorization: `Bearer ${authState.token}`,
           },
         });
 
         setName(data.name);
-        setDescription(data.description);
-        setStatus(data.status);
+        setEmail(data.email);
+        setUsername(data.username);
       } catch (error) {
         console.log(error);
       } finally {
@@ -66,11 +60,12 @@ const HouseForm = () => {
       let response;
       if (!id) {
         response = await api.post(
-          "houses",
+          "users",
           {
             name,
-            description,
-            status,
+            username,
+            email,
+            password,
           },
           {
             headers: {
@@ -80,11 +75,12 @@ const HouseForm = () => {
         );
       } else {
         response = await api.put(
-          `houses/${id}`,
+          `users/${id}`,
           {
             name,
-            description,
-            status,
+            username,
+            email,
+            password: password ? password : null,
           },
           {
             headers: {
@@ -120,13 +116,13 @@ const HouseForm = () => {
         mb={5}>
         <div>
           <Typography variant="h5">
-            Form {id ? "Ubah" : "Tambah"} Rumah
+            Form {id ? "Ubah" : "Tambah"} User/Admin
           </Typography>
           <Typography variant="body2">Isi detail dibawah ini</Typography>
         </div>
         <div>
           <Link
-            to="/house"
+            to="/users"
             style={{ textDecoration: "none", color: "inherit" }}>
             <Button variant="contained">Kembali</Button>
           </Link>
@@ -137,35 +133,37 @@ const HouseForm = () => {
           <Stack direction={"column"} gap={5}>
             <FormControl fullWidth>
               <TextField
-                id="nama-rumah"
-                label="Nama Rumah"
+                id="nama-user"
+                label="Nama User"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </FormControl>
             <FormControl fullWidth>
               <TextField
-                id="deskripsi-rumah"
-                label="Deskripsi rumah"
-                multiline
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={4}
+                id="email"
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </FormControl>
-
             <FormControl fullWidth>
-              <InputLabel id="status-label">Status Rumah</InputLabel>
-              <Select
-                labelId="status-label"
-                id="status"
-                value={status}
-                label="Status Rumah"
-                onChange={handleChange}
-                defaultValue={id ? status : "available"}>
-                <MenuItem value="available">Tersedia</MenuItem>
-                <MenuItem value="occupied">Sudah Dihuni</MenuItem>
-              </Select>
+              <TextField
+                id="username"
+                label="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </FormControl>
+            <FormControl fullWidth>
+              <TextField
+                id="password"
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </FormControl>
 
             <div>
@@ -186,4 +184,4 @@ const HouseForm = () => {
   );
 };
 
-export default HouseForm;
+export default UsersForm;

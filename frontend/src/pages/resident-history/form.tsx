@@ -40,12 +40,14 @@ const ResidentHistoryForm = () => {
   const [message, setMessage] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
   const [addField, setAddField] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
   const { id } = useParams<string>();
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const { data } = await api.get<ResidentHistory>(
           `residents-history/${id}`,
@@ -72,6 +74,8 @@ const ResidentHistoryForm = () => {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     if (id) {
@@ -83,6 +87,7 @@ const ResidentHistoryForm = () => {
     event.preventDefault();
 
     try {
+      setLoading(true);
       let response;
       if (!id) {
         response = await api.post(
@@ -127,11 +132,13 @@ const ResidentHistoryForm = () => {
         setMessage("Terjadi kesalahan");
       }
       setOpen(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={{ xs: "flex-start", sm: "space-between" }}

@@ -11,8 +11,6 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Preview from "@mui/icons-material/Preview";
@@ -65,7 +63,7 @@ const ResidentList = () => {
   }, [authState.token, signal]);
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={{ xs: "flex-start", sm: "space-between" }}
@@ -117,12 +115,6 @@ const ResidentList = () => {
           ]}
         />
       </div>
-
-      <Backdrop
-        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-        open={loading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </Layout>
   );
 };
@@ -247,14 +239,18 @@ const ButtonDetail: React.FC<{ data: Resident["houses"] }> = ({ data }) => {
           <Typography>Tempat tinggal</Typography>
           <Box mt={2}>
             <Home />
-            <Stack>
-              {data.map((item) => (
-                <Box key={item.id}>
-                  <Typography>{item.name}</Typography>
-                  <Typography>{item.description}</Typography>
-                </Box>
-              ))}
-            </Stack>
+            {data.length === 0 ? (
+              <Typography>Tidak ada data</Typography>
+            ) : (
+              <Stack>
+                {data.map((item) => (
+                  <Box key={item.id}>
+                    <Typography>{item.name}</Typography>
+                    <Typography>{item.description}</Typography>
+                  </Box>
+                ))}
+              </Stack>
+            )}
           </Box>
           <Stack direction={"row"} justifyContent={"flex-end"} mt={2}>
             <Button

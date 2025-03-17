@@ -9,8 +9,6 @@ import Typography from "@mui/material/Typography";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";
 import Dialog from "@mui/material/Dialog";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 import DialogContent from "@mui/material/DialogContent";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -70,7 +68,7 @@ const ResidenHistorytList = () => {
     fetchData();
   }, [authState.token, signal]);
   return (
-    <Layout>
+    <Layout loading={loading}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={{ xs: "flex-start", sm: "space-between" }}
@@ -111,11 +109,6 @@ const ResidenHistorytList = () => {
           },
         ]}
       />
-      <Backdrop
-        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-        open={loading}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </Layout>
   );
 };

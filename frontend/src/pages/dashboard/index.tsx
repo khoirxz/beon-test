@@ -31,12 +31,14 @@ const DashboardPage = () => {
     },
   ]);
   const [month, setMonth] = useState<string>(dayjs().format("YYYY-MM"));
+  const [loading, setLoading] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const fetchSummary = async () => {
       try {
+        setLoading(true);
         const response = await api.get<{ summary: summaryType[] }>("summary", {
           headers: {
             Authorization: `Bearer ${authState.token}`,
@@ -54,11 +56,15 @@ const DashboardPage = () => {
         );
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
     const fetchReport = async () => {
       try {
+        setLoading(true);
+
         const response = await api.get<ReportProps>(`report`, {
           params: {
             month: month.split("-")[0] + "-" + month.split("-")[1],
@@ -71,6 +77,8 @@ const DashboardPage = () => {
         setReport(response.data);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -79,7 +87,7 @@ const DashboardPage = () => {
   }, [authState.token, month]);
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <h1>Dashboard</h1>
       <Box sx={{ width: "100%" }}>
         <Typography>Grafik Keseluruhan</Typography>

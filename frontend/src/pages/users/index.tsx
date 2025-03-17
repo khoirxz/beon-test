@@ -16,52 +16,42 @@ import DialogContent from "@mui/material/DialogContent";
 import Layout from "../../layout/layout";
 import api from "../../api";
 import { RootState } from "../../store";
-import { Expense } from "../../interfaces/Expense";
+import { User } from "../../interfaces/User";
 
 const columns: GridColDef[] = [
-  { field: "services", headerName: "Nama Layanan", width: 200 },
-  { field: "admin", headerName: "Admin", width: 150 },
-  { field: "expense_date", headerName: "Tanggal", width: 150 },
-  { field: "expense_total", headerName: "Total", width: 150 },
+  { field: "name", headerName: "Nama", width: 200 },
+  {
+    field: "username",
+    headerName: "Username",
+    width: 150,
+  },
+  {
+    field: "created_at",
+    headerName: "Dibuat",
+    width: 150,
+    renderCell: (params) => <>{params.row.created_at.split("T")[0]}</>,
+  },
 ];
 
-const ExpenseList = () => {
-  const [data, setData] = useState<
-    {
-      id: string;
-      description: string;
-      expense_date: string;
-      expense_total: number;
-      admin: string;
-      services: string;
-    }[]
-  >([]);
-  const [signal, setSignal] = useState<boolean>(false);
+const UsersList = () => {
+  const [data, setData] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [signal, setSignal] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
+
       try {
-        setLoading(true);
-        const response = await api.get<Expense[]>("expenses", {
+        const response = await api.get<User[]>("users", {
           headers: {
             Authorization: `Bearer ${authState.token}`,
           },
         });
 
-        setData(
-          response.data.map((item) => ({
-            id: item.id,
-            description: item.description,
-            expense_date: item.expense_date,
-            expense_total: item.expense_total,
-            admin: item.admin.name,
-            services: item.services.name,
-          }))
-        );
-        console.log(response.data);
+        setData(response.data);
       } catch {
         console.log("error");
       } finally {
@@ -81,12 +71,14 @@ const ExpenseList = () => {
         gap={{ xs: 2, sm: 0 }}
         mb={5}>
         <div>
-          <Typography variant="h5">Daftar Pengeluaran</Typography>
-          <Typography variant="body2">Daftar semua Pengeluaran</Typography>
+          <Typography variant="h5">Daftar User / Admin</Typography>
+          <Typography variant="body2">
+            Daftar semua Pengurus Administrasi
+          </Typography>
         </div>
         <div>
           <Link
-            to="/expense/form"
+            to="/users/form"
             style={{ textDecoration: "none", color: "inherit" }}>
             <Button variant="contained">Tambah</Button>
           </Link>
@@ -103,12 +95,14 @@ const ExpenseList = () => {
             width: 150,
             renderCell: (params) => (
               <ButtonGroup variant="text">
-                <Link to={`/expense/form/${params.row.id}`}>
+                <Link to={`/users/form/${params.row.id}`}>
                   <IconButton>
                     <EditIcon />
                   </IconButton>
                 </Link>
-                <ButtonDelete id={params.row.id} setSignal={setSignal} />
+                {params.row.id != authState.user?.id ? (
+                  <ButtonDelete id={params.row.id} setSignal={setSignal} />
+                ) : null}
               </ButtonGroup>
             ),
           },
@@ -128,7 +122,7 @@ const ButtonDelete: React.FC<{
 
   const handleDelete = async (id: string) => {
     try {
-      const response = await api.delete(`expenses/${id}`, {
+      const response = await api.delete(`users/${id}`, {
         headers: {
           Authorization: `Bearer ${authState.token}`,
         },
@@ -140,7 +134,6 @@ const ButtonDelete: React.FC<{
       console.log(error);
     }
   };
-
   return (
     <div>
       <IconButton onClick={() => setOpen(true)}>
@@ -163,4 +156,4 @@ const ButtonDelete: React.FC<{
   );
 };
 
-export default ExpenseList;
+export default UsersList;

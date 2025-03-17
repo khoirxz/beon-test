@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,6 +21,8 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import PeopleIcon from "@mui/icons-material/People";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
@@ -26,9 +31,13 @@ import ReceiptIcon from "@mui/icons-material/Receipt";
 import HomeIcon from "@mui/icons-material/Home";
 import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import SettingsIcon from "@mui/icons-material/Settings";
+
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import { GLOBAL_CONFIG } from "../config";
+import { logout } from "../features/authSlice";
 
 const drawerWidth = 240;
 
@@ -109,10 +118,23 @@ const router: routerProps[] = [
   },
 ];
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({
+  children,
+  loading = false,
+}: {
+  children: React.ReactNode;
+  loading?: boolean;
+}) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [open, setOpen] = React.useState<boolean>(false);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
@@ -126,6 +148,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     if (!isClosing) {
       setMobileOpen(!mobileOpen);
     }
+  };
+
+  const handleLogout = () => {
+    dispatch(logout());
+    localStorage.removeItem("persist:root");
+    navigate("/login");
   };
 
   const menu = (
@@ -162,12 +190,37 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <List>{menu}</List>
       <Divider />
       <List>
+        <ListItemButton onClick={handleClick}>
+          <ListItemIcon>
+            <AdminPanelSettingsIcon />
+          </ListItemIcon>
+          <ListItemText primary="Admin Menu" />
+          {open ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={open} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <Link
+              to={"/users"}
+              style={{
+                textDecoration: "none",
+                width: "100%",
+                color: "inherit",
+              }}>
+              <ListItemButton sx={{ pl: 4 }}>
+                <ListItemIcon>
+                  <SupervisedUserCircleIcon />
+                </ListItemIcon>
+                <ListItemText primary="Daftar Admin" />
+              </ListItemButton>
+            </Link>
+          </List>
+        </Collapse>
         <ListItem disablePadding>
-          <ListItemButton>
+          <ListItemButton onClick={handleLogout}>
             <ListItemIcon>
-              <SettingsIcon />
+              <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary="Pengaturan" />
+            <ListItemText primary="Logout" />
           </ListItemButton>
         </ListItem>
       </List>
@@ -244,6 +297,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <Toolbar />
         {children}
       </Box>
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 };

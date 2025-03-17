@@ -55,10 +55,15 @@ class UsersController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
             'username' => 'required|unique:users,username,' . $id,
-            'password' => 'required',
+            'password' => 'nullable',
         ]);
 
-        $user->update($request->all());
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'username' => $request->username,
+            'password' => $request->password ? $request->password : $user->password,
+        ]);
         return response()->json($user, 200);
     }
 

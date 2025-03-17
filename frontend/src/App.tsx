@@ -14,12 +14,19 @@ import ServiceForm from "./pages/services/form";
 import ExpenseList from "./pages/expense";
 import ExpenseForm from "./pages/expense/form";
 import LoginPage from "./pages/auth/login";
+import UsersList from "./pages/users";
+import UsersForm from "./pages/users/form";
 import ProtectedRoute from "./utils/ProtectedRoute";
+import SignupPage from "./pages/auth/signup";
 
 const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPage />,
+  },
+  {
+    path: "/signup",
+    element: <SignupPage />,
   },
   {
     path: "/",
@@ -208,6 +215,36 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <ExpenseForm />,
+      },
+    ],
+  },
+  {
+    path: "/users",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <UsersList />,
+      },
+    ],
+  },
+  {
+    path: "/users/form",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <UsersForm />,
+      },
+    ],
+  },
+  {
+    path: "/users/form/:id",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: "",
+        element: <UsersForm />,
       },
     ],
   },

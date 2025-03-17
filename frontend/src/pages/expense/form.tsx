@@ -38,6 +38,7 @@ const ExpenseForm = () => {
   const [expenseTotal, setExpenseTotal] = useState<number>(0);
   const [message, setMessage] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
   const { id } = useParams<string>();
@@ -59,6 +60,7 @@ const ExpenseForm = () => {
 
     const fetchData = async () => {
       try {
+        setLoading(true);
         const { data } = await api.get<Expense>(`expenses/${id}`, {
           headers: {
             Authorization: `Bearer ${authState.token}`,
@@ -74,6 +76,8 @@ const ExpenseForm = () => {
         setExpenseTotal(data.expense_total);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(true);
       }
     };
 
@@ -88,6 +92,7 @@ const ExpenseForm = () => {
     event.preventDefault();
 
     try {
+      setLoading(true);
       let response;
       if (!id) {
         response = await api.post(
@@ -134,6 +139,8 @@ const ExpenseForm = () => {
         setMessage("Terjadi kesalahan");
       }
       setOpen(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -142,7 +149,7 @@ const ExpenseForm = () => {
   };
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={{ xs: "flex-start", sm: "space-between" }}

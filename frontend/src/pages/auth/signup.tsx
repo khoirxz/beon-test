@@ -11,13 +11,16 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 
 import api from "../../api";
-import { login } from "../../features/authSlice";
+import { signup } from "../../features/authSlice";
 import { User } from "../../interfaces/User";
 import { RootState } from "../../store";
 
-const LoginPage = () => {
+const SignupPage = () => {
+  const [name, setName] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -36,7 +39,7 @@ const LoginPage = () => {
     const savedUser = localStorage.getItem("user");
 
     if (savedToken && savedUser) {
-      dispatch(login({ user: JSON.parse(savedUser), token: savedToken }));
+      dispatch(signup({ user: JSON.parse(savedUser), token: savedToken }));
       navigate("/");
     }
   }, [dispatch, navigate]);
@@ -48,13 +51,16 @@ const LoginPage = () => {
 
     try {
       const { data }: { data: { user: User; token: string } } = await api.post(
-        "login",
+        "register",
         {
+          name,
+          username,
           email,
           password,
+          password_confirmation: passwordConfirmation,
         }
       );
-      dispatch(login({ user: data.user, token: data.token }));
+      dispatch(signup({ user: data.user, token: data.token }));
       // localStorage.setItem("token", data.token);
       console.log(data.token);
     } catch (error) {
@@ -91,6 +97,20 @@ const LoginPage = () => {
 
             <TextField
               required
+              id="name"
+              label="Nama"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+            <TextField
+              required
+              id="username"
+              label="Username"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+            />
+            <TextField
+              required
               id="email"
               label="Email"
               value={email}
@@ -105,17 +125,25 @@ const LoginPage = () => {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
+            <TextField
+              required
+              id="password_confirmation"
+              label="Konfirmasi Password"
+              type="password"
+              value={passwordConfirmation}
+              onChange={(event) => setPasswordConfirmation(event.target.value)}
+            />
 
             {error && <Typography color="error">{error}</Typography>}
 
             <Button variant="contained" type="submit" loading={loading}>
-              Login
+              Signup
             </Button>
 
             <Typography variant="body2" sx={{ textAlign: "center" }}>
-              Belum punya akun?{" "}
-              <Button variant="text" onClick={() => navigate("/signup")}>
-                Daftar
+              Sudah punya akun?{" "}
+              <Button variant="text" onClick={() => navigate("/login")}>
+                Login
               </Button>
             </Typography>
           </Card>
@@ -125,4 +153,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;

@@ -40,12 +40,14 @@ const PaymentList = () => {
     }[]
   >([]);
   const [signal, setSignal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await api.get<Payment[]>("payments", {
           headers: {
             Authorization: `Bearer ${authState.token}`,
@@ -65,6 +67,8 @@ const PaymentList = () => {
         );
       } catch {
         console.log("error");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -72,7 +76,7 @@ const PaymentList = () => {
   }, [authState.token, signal]);
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={{ xs: "flex-start", sm: "space-between" }}

@@ -48,6 +48,7 @@ const PaymentForm = () => {
   const [period, setPeriod] = useState<string>(dayjs().format("YYYY-MM-DD"));
   const [message, setMessage] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
   const { id } = useParams<string>();
@@ -82,6 +83,8 @@ const PaymentForm = () => {
 
     const fetchData = async () => {
       try {
+        setLoading(true);
+
         const { data } = await api.get<Payment>(`payments/${id}`, {
           headers: {
             Authorization: `Bearer ${authState.token}`,
@@ -102,6 +105,8 @@ const PaymentForm = () => {
         setPeriod(data.billing_period);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -116,6 +121,8 @@ const PaymentForm = () => {
     event.preventDefault();
 
     try {
+      setLoading(true);
+
       let response;
       if (!id) {
         response = await api.post(
@@ -164,6 +171,8 @@ const PaymentForm = () => {
         setMessage("Terjadi kesalahan");
       }
       setOpen(true);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -172,7 +181,7 @@ const PaymentForm = () => {
   };
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={{ xs: "flex-start", sm: "space-between" }}

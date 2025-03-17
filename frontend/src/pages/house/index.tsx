@@ -38,11 +38,14 @@ const columns: GridColDef[] = [
 
 const HouseList = () => {
   const [data, setData] = useState<House[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [signal, setSignal] = useState<boolean>(false);
   const authState = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
+
       try {
         const response = await api.get<House[]>("houses", {
           headers: {
@@ -53,6 +56,8 @@ const HouseList = () => {
         setData(response.data);
       } catch {
         console.log("error");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -60,7 +65,7 @@ const HouseList = () => {
   }, [authState.token, signal]);
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={{ xs: "flex-start", sm: "space-between" }}
