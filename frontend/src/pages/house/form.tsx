@@ -107,8 +107,9 @@ const HouseForm = () => {
     <Layout>
       <Stack
         direction={{ xs: "column", sm: "row" }}
-        justifyContent={"space-between"}
-        alignItems="center"
+        justifyContent={{ xs: "flex-start", sm: "space-between" }}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        gap={{ xs: 2, sm: 0 }}
         mb={5}>
         <div>
           <Typography variant="h5">

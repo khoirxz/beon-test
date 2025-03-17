@@ -120,6 +120,8 @@ const DashboardPage = () => {
               rows={report?.income_details || []}
               columns={[
                 { field: "total_payment", headerName: "Total", flex: 1 },
+                { field: "resident_name", headerName: "Pemilik", flex: 1 },
+                { field: "service_name", headerName: "Layanan", flex: 1 },
                 { field: "payment_date", headerName: "Tanggal", flex: 1 },
               ]}
             />
@@ -131,6 +133,8 @@ const DashboardPage = () => {
               rows={report?.expense_details || []}
               columns={[
                 { field: "expense_total", headerName: "Total", flex: 1 },
+                { field: "service_name", headerName: "Layanan", flex: 1 },
+                { field: "admin_name", headerName: "Admin", flex: 1 },
                 { field: "expense_date", headerName: "Tanggal", flex: 1 },
               ]}
             />

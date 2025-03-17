@@ -70,15 +70,16 @@ const LoginPage = () => {
       component="main"
       sx={{
         flexGrow: 1,
-        p: 3,
+        p: { xs: 0, sm: 3 },
       }}>
       <Toolbar />
       <Container sx={{ display: "flex", justifyContent: "center" }}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <Card
             sx={{
+              margin: "auto",
               p: 4,
-              maxWidth: 400,
+              maxWidth: { xs: "100%", sm: 400 },
               width: "100%",
               display: "flex",
               flexDirection: "column",

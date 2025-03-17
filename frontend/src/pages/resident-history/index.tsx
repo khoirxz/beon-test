@@ -8,10 +8,12 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Typography from "@mui/material/Typography";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";
+import Dialog from "@mui/material/Dialog";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import DialogContent from "@mui/material/DialogContent";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import Dialog from "@mui/material/Dialog";
-import DialogContent from "@mui/material/DialogContent";
 
 import Layout from "../../layout/layout";
 import { ResidentHistory } from "../../interfaces/Resident";
@@ -30,11 +32,12 @@ type dataProps = {
   name: string;
   house: string;
   date_filled: string;
-  date_out: string;
+  date_out: string | null;
 };
 
 const ResidenHistorytList = () => {
   const [data, setData] = useState<dataProps[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [signal, setSignal] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
@@ -42,6 +45,7 @@ const ResidenHistorytList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await api.get<ResidentHistory[]>("residents-history", {
           headers: {
             Authorization: `Bearer ${authState.token}`,
@@ -56,10 +60,11 @@ const ResidenHistorytList = () => {
           date_out: item.date_out,
         }));
 
-        console.log(newData);
         setData(newData);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -68,8 +73,9 @@ const ResidenHistorytList = () => {
     <Layout>
       <Stack
         direction={{ xs: "column", sm: "row" }}
-        justifyContent={"space-between"}
-        alignItems="center"
+        justifyContent={{ xs: "flex-start", sm: "space-between" }}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        gap={{ xs: 2, sm: 0 }}
         mb={5}>
         <div>
           <Typography variant="h5">Daftar Riwayat Penduduk</Typography>
@@ -105,6 +111,11 @@ const ResidenHistorytList = () => {
           },
         ]}
       />
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Layout>
   );
 };

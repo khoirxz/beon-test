@@ -18,7 +18,17 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import StarBorder from "@mui/icons-material/StarBorder";
+
+import PeopleIcon from "@mui/icons-material/People";
+import ContactPageIcon from "@mui/icons-material/ContactPage";
+import SwitchAccountIcon from "@mui/icons-material/SwitchAccount";
+import ReceiptIcon from "@mui/icons-material/Receipt";
+import HomeIcon from "@mui/icons-material/Home";
+import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import SettingsIcon from "@mui/icons-material/Settings";
+
+import { GLOBAL_CONFIG } from "../config";
 
 const drawerWidth = 240;
 
@@ -51,20 +61,20 @@ const router: routerProps[] = [
     id: 2,
     name: "Penduduk",
     nameRoute: "resident",
-    icon: <InboxIcon />,
+    icon: <PeopleIcon />,
     children: [
       {
         id: 1,
         name: "Daftar Penduduk",
         nameRoute: "resident",
-        icon: <InboxIcon />,
+        icon: <ContactPageIcon />,
         path: "/resident",
       },
       {
         id: 2,
         name: "Riwayat",
         nameRoute: "history",
-        icon: <InboxIcon />,
+        icon: <SwitchAccountIcon />,
         path: "/resident-history",
       },
     ],
@@ -73,28 +83,28 @@ const router: routerProps[] = [
     id: 3,
     name: "Rumah",
     nameRoute: "house",
-    icon: <InboxIcon />,
+    icon: <HomeIcon />,
     path: "/house",
   },
   {
     id: 4,
     name: "Pembayaran",
     nameRoute: "payment",
-    icon: <InboxIcon />,
+    icon: <ReceiptIcon />,
     path: "/payment",
   },
   {
     id: 5,
     name: "Layanan",
     nameRoute: "service",
-    icon: <InboxIcon />,
+    icon: <MiscellaneousServicesIcon />,
     path: "/service",
   },
   {
     id: 6,
     name: "Expense",
     nameRoute: "expense",
-    icon: <InboxIcon />,
+    icon: <ShoppingCartIcon />,
     path: "/expense",
   },
 ];
@@ -155,7 +165,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <ListItem disablePadding>
           <ListItemButton>
             <ListItemIcon>
-              <InboxIcon />
+              <SettingsIcon />
             </ListItemIcon>
             <ListItemText primary="Pengaturan" />
           </ListItemButton>
@@ -183,7 +193,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Responsive drawer
+            {GLOBAL_CONFIG.name}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -229,7 +239,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          width: { xs: "100%", sm: `calc(100% - ${drawerWidth}px)` },
         }}>
         <Toolbar />
         {children}
@@ -248,9 +258,7 @@ const MenuItem = ({ router }: { router: routerProps }) => {
   return (
     <>
       <ListItemButton onClick={handleClick}>
-        <ListItemIcon>
-          <InboxIcon />
-        </ListItemIcon>
+        <ListItemIcon>{router.icon}</ListItemIcon>
         <ListItemText primary={router.name} />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
@@ -266,9 +274,7 @@ const MenuItem = ({ router }: { router: routerProps }) => {
                   color: "inherit",
                 }}>
                 <ListItemButton sx={{ pl: 4 }}>
-                  <ListItemIcon>
-                    <StarBorder />
-                  </ListItemIcon>
+                  <ListItemIcon>{route.icon}</ListItemIcon>
                   <ListItemText primary={route.name} />
                 </ListItemButton>
               </Link>

@@ -13,6 +13,8 @@ export interface IncomeDetail {
   total_payment: number;
   status: string;
   billing_period: string;
+  service_name: string;
+  resident_name: string;
 }
 
 export interface ExpenseDetail {
@@ -20,4 +22,6 @@ export interface ExpenseDetail {
   expense_date: string;
   expense_total: number;
   description: string;
+  admin_name: string;
+  service_name: string;
 }

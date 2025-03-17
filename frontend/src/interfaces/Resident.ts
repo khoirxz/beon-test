@@ -10,6 +10,7 @@ export interface Resident {
   deleted_at: string;
   created_at: string;
   updated_at: string;
+  houses: HouseHistory[];
 }
 
 export interface ResidentHistory {
@@ -23,4 +24,15 @@ export interface ResidentHistory {
   updated_at: string;
   resident: Resident;
   house: House;
+}
+
+export interface HouseHistory extends House {
+  pivot: Pivot;
+}
+
+export interface Pivot {
+  id_resident: string;
+  id_house: string;
+  created_at: string;
+  updated_at: string;
 }

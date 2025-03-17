@@ -11,9 +11,12 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import IconButton from "@mui/material/IconButton";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Preview from "@mui/icons-material/Preview";
+import Home from "@mui/icons-material/Home";
 
 import api from "../../api";
 import { RootState } from "../../store";
@@ -22,7 +25,7 @@ import { Resident } from "../../interfaces/Resident";
 
 const columns: GridColDef[] = [
   { field: "name", headerName: "Nama", width: 200 },
-  { field: "resident_status", headerName: "Kependudukan", width: 150 },
+  { field: "resident_status", headerName: "Kependudukan", width: 100 },
   { field: "phone", headerName: "Nomor", width: 150 },
   {
     field: "married_status",
@@ -35,12 +38,14 @@ const columns: GridColDef[] = [
 
 const ResidentList = () => {
   const [data, setData] = useState<Resident[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [signal, setSignal] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await api.get<Resident[]>("residents", {
           headers: {
@@ -51,19 +56,21 @@ const ResidentList = () => {
         setData(response.data);
       } catch {
         console.log("error");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [authState.token, signal]);
 
-  console.log(data);
   return (
     <Layout>
       <Stack
         direction={{ xs: "column", sm: "row" }}
-        justifyContent={"space-between"}
-        alignItems="center"
+        justifyContent={{ xs: "flex-start", sm: "space-between" }}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        gap={{ xs: 2, sm: 0 }}
         mb={5}>
         <div>
           <Typography variant="h5">Daftar Penduduk</Typography>
@@ -78,28 +85,44 @@ const ResidentList = () => {
         </div>
       </Stack>
 
-      <DataGrid
-        rows={data}
-        columns={[
-          ...columns,
-          {
-            field: "action",
-            headerName: "Aksi",
-            width: 150,
-            renderCell: (params) => (
-              <ButtonGroup variant="text">
-                <ButtonPreview id={params.row.id} />
-                <Link to={`/resident/form/${params.row.id}`}>
-                  <IconButton>
-                    <EditIcon />
-                  </IconButton>
-                </Link>
-                <ButtonDelete id={params.row.id} setSignal={setSignal} />
-              </ButtonGroup>
-            ),
-          },
-        ]}
-      />
+      <div style={{ width: "100%" }}>
+        <DataGrid
+          rows={data}
+          columns={[
+            ...columns,
+            {
+              field: "detail",
+              headerName: "Detail",
+              renderCell: (params) => (
+                <ButtonGroup>
+                  <ButtonDetail data={params.row.houses} />
+                </ButtonGroup>
+              ),
+            },
+            {
+              field: "action",
+              headerName: "Aksi",
+              renderCell: (params) => (
+                <ButtonGroup variant="text">
+                  <ButtonPreview id={params.row.id} />
+                  <Link to={`/resident/form/${params.row.id}`}>
+                    <IconButton>
+                      <EditIcon />
+                    </IconButton>
+                  </Link>
+                  <ButtonDelete id={params.row.id} setSignal={setSignal} />
+                </ButtonGroup>
+              ),
+            },
+          ]}
+        />
+      </div>
+
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Layout>
   );
 };
@@ -126,6 +149,7 @@ const ButtonDelete: React.FC<{
       console.log(error);
     }
   };
+
   return (
     <div>
       <IconButton onClick={() => setOpen(true)}>
@@ -195,6 +219,42 @@ const ButtonPreview: React.FC<{ id: string }> = ({ id }) => {
             <Typography>
               Menikah: {data?.married_status === 1 ? "Ya" : "Tidak"}
             </Typography>
+          </Box>
+          <Stack direction={"row"} justifyContent={"flex-end"} mt={2}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => setOpen(false)}>
+              Tutup
+            </Button>
+          </Stack>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+const ButtonDetail: React.FC<{ data: Resident["houses"] }> = ({ data }) => {
+  const [open, setOpen] = useState<boolean>(false);
+
+  return (
+    <div>
+      <IconButton onClick={() => setOpen(true)}>
+        <Home />
+      </IconButton>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogContent sx={{ p: 3, width: { xs: "100%", md: 600 } }}>
+          <Typography>Tempat tinggal</Typography>
+          <Box mt={2}>
+            <Home />
+            <Stack>
+              {data.map((item) => (
+                <Box key={item.id}>
+                  <Typography>{item.name}</Typography>
+                  <Typography>{item.description}</Typography>
+                </Box>
+              ))}
+            </Stack>
           </Box>
           <Stack direction={"row"} justifyContent={"flex-end"} mt={2}>
             <Button
