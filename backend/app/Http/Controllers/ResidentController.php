@@ -20,7 +20,7 @@ class ResidentController extends Controller
     public function index()
     {
         //
-        return response()->json(Resident::latest()->get(), 200);
+        return response()->json(Resident::with('houses')->whereNull('deleted_at')->latest()->get(), 200);
     }
 
     /**

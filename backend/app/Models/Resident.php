@@ -30,4 +30,16 @@ class Resident extends Model
         'phone',
         'married_status'
     ];
+
+    // sembunyikan kolom deleted_at dan updated_at
+    protected $hidden = [
+        'deleted_at',
+    ];
+
+    public function houses()
+    {
+        return $this->belongsToMany(House::class, 'resident_histories', 'id_resident', 'id_house')
+            ->whereNull('resident_histories.date_out') // only residents who are still in the house
+            ->withTimestamps();
+    }
 }

@@ -38,4 +38,11 @@ class House extends Model
     //         $model->id = Str::uuid();
     //     });
     // }
+
+    public function residents()
+    {
+        return $this->belongsToMany(Resident::class, 'resident_histories', 'id_house', 'id_resident')
+            ->whereNull('resident_histories.date_out')
+            ->withTimestamps();
+    }
 }

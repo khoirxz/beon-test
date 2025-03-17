@@ -13,7 +13,7 @@ class HouseController extends Controller
     public function index()
     {
         //
-        return response()->json(House::whereNull('deleted_at')->latest()->get(), 200);
+        return response()->json(House::with('residents')->whereNull('deleted_at')->latest()->get(), 200);
     }
 
     /**

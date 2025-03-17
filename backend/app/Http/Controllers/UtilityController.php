@@ -56,8 +56,19 @@ class UtilityController extends Controller
 
         // Ambil data pemasukan
         $income = DB::table('payments')
+            ->join('services', 'payments.id_services', '=', 'services.id')
+            ->join('resident_histories', 'payments.id_resident_history', '=', 'resident_histories.id')
+            ->join('residents', 'resident_histories.id_resident', '=', 'residents.id')
             ->whereRaw("DATE_FORMAT(payment_date, '%Y-%m') = ?", [$month])
-            ->select('id', 'payment_date', 'total_payment', 'status', 'billing_period')
+            ->select(
+                'payments.id',
+                'payments.payment_date',
+                'payments.total_payment',
+                'payments.status',
+                'payments.billing_period',
+                'services.name as service_name',
+                'residents.name as resident_name'
+            )
             ->get();
 
         // Ambil total pemasukan
@@ -67,8 +78,18 @@ class UtilityController extends Controller
 
         // Ambil data pengeluaran
         $expenses = DB::table('expenses')
+            ->join('services', 'expenses.id_services', '=', 'services.id')
+            ->join('users', 'expenses.id_admin', '=', 'users.id')
             ->whereRaw("DATE_FORMAT(expense_date, '%Y-%m') = ?", [$month])
-            ->select('id', 'expense_date', 'expense_total', 'description')
+            ->select(
+                'expenses.id',
+                'expenses.expense_date',
+                'expenses.expense_total',
+                'expenses.description',
+                'expenses.id_services',
+                'services.name as service_name',
+                'users.name as admin_name'
+            )
             ->get();
 
         // Ambil total pengeluaran
