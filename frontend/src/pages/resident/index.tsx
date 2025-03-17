@@ -85,6 +85,9 @@ const ResidentList = () => {
 
       <div style={{ width: "100%" }}>
         <DataGrid
+          sx={{
+            maxHeight: 450,
+          }}
           rows={data}
           columns={[
             ...columns,

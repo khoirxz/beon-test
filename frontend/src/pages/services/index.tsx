@@ -28,12 +28,14 @@ const columns: GridColDef[] = [
 const ServicesList = () => {
   const [data, setData] = useState<Service[]>([]);
   const [signal, setSignal] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await api.get<Service[]>("services", {
           headers: {
             Authorization: `Bearer ${authState.token}`,
@@ -43,6 +45,8 @@ const ServicesList = () => {
         setData(response.data);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -50,7 +54,7 @@ const ServicesList = () => {
   }, [authState.token, signal]);
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={{ xs: "flex-start", sm: "space-between" }}

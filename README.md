@@ -23,6 +23,12 @@ kemudian masuk ke folder beon-test dan lakukan perintah berikut
 composer install
 ```
 
+link storage
+
+```bash
+php artisan storage:link
+```
+
 ## Konfigurasi Database
 
 Buka file .env dan sesuaikan dengan konfigurasi database anda, terutama DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD

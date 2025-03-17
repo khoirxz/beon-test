@@ -316,7 +316,7 @@ const ModalUser = ({
             sx={{ mt: 2 }}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <Box sx={{ mt: 2 }}>
+          <Box sx={{ mt: 2, maxHeight: 200, overflowY: "scroll" }}>
             {data.map((item) => (
               <Button
                 onClick={() => handleSelect(item)}

@@ -125,6 +125,9 @@ const DashboardPage = () => {
             <Typography>Pemasukan</Typography>
             <Typography sx={{ mb: 2 }}>{report?.total_income}</Typography>
             <DataGrid
+              sx={{
+                maxHeight: 300,
+              }}
               rows={report?.income_details || []}
               columns={[
                 { field: "total_payment", headerName: "Total", flex: 1 },
@@ -138,6 +141,9 @@ const DashboardPage = () => {
             <Typography>Pengeluaran</Typography>
             <Typography sx={{ mb: 2 }}>{report?.total_expense}</Typography>
             <DataGrid
+              sx={{
+                maxHeight: 300,
+              }}
               rows={report?.expense_details || []}
               columns={[
                 { field: "expense_total", headerName: "Total", flex: 1 },

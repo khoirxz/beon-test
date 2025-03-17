@@ -75,79 +75,83 @@ const SignupPage = () => {
     <Box
       component="main"
       sx={{
-        flexGrow: 1,
-        p: { xs: 0, sm: 3 },
+        display: "flex",
+        flexDirection: "column",
       }}>
       <Toolbar />
-      <Container sx={{ display: "flex", justifyContent: "center" }}>
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <Card
-            sx={{
-              margin: "auto",
-              p: 4,
-              maxWidth: { xs: "100%", sm: 400 },
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-            }}>
-            <Typography variant="h5" sx={{ textAlign: "center" }}>
-              Sistem Administrasi
-            </Typography>
+      <Container
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+        <Card
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            p: { xs: 1, md: 4 },
+            width: { xs: "100%", md: 400 },
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}>
+          <Typography variant="h5" sx={{ textAlign: "center" }}>
+            Sistem Administrasi
+          </Typography>
 
-            <TextField
-              required
-              id="name"
-              label="Nama"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-            />
-            <TextField
-              required
-              id="username"
-              label="Username"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-            />
-            <TextField
-              required
-              id="email"
-              label="Email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
+          <TextField
+            required
+            id="name"
+            label="Nama"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <TextField
+            required
+            id="username"
+            label="Username"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+          />
+          <TextField
+            required
+            id="email"
+            label="Email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
 
-            <TextField
-              required
-              id="password"
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-            <TextField
-              required
-              id="password_confirmation"
-              label="Konfirmasi Password"
-              type="password"
-              value={passwordConfirmation}
-              onChange={(event) => setPasswordConfirmation(event.target.value)}
-            />
+          <TextField
+            required
+            id="password"
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+          <TextField
+            required
+            id="password_confirmation"
+            label="Konfirmasi Password"
+            type="password"
+            value={passwordConfirmation}
+            onChange={(event) => setPasswordConfirmation(event.target.value)}
+          />
 
-            {error && <Typography color="error">{error}</Typography>}
+          {error && <Typography color="error">{error}</Typography>}
 
-            <Button variant="contained" type="submit" loading={loading}>
-              Signup
+          <Button variant="contained" type="submit" loading={loading}>
+            Signup
+          </Button>
+
+          <Typography variant="body2" sx={{ textAlign: "center" }}>
+            Sudah punya akun?{" "}
+            <Button variant="text" onClick={() => navigate("/login")}>
+              Login
             </Button>
-
-            <Typography variant="body2" sx={{ textAlign: "center" }}>
-              Sudah punya akun?{" "}
-              <Button variant="text" onClick={() => navigate("/login")}>
-                Login
-              </Button>
-            </Typography>
-          </Card>
-        </form>
+          </Typography>
+        </Card>
       </Container>
     </Box>
   );

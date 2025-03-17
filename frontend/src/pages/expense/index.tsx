@@ -94,6 +94,9 @@ const ExpenseList = () => {
       </Stack>
 
       <DataGrid
+        sx={{
+          maxHeight: 450,
+        }}
         rows={data}
         columns={[
           ...columns,

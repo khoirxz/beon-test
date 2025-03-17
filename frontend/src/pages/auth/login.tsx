@@ -69,57 +69,63 @@ const LoginPage = () => {
     <Box
       component="main"
       sx={{
-        flexGrow: 1,
-        p: { xs: 0, sm: 3 },
+        display: "flex",
+        flexDirection: "column",
       }}>
-      <Toolbar />
-      <Container sx={{ display: "flex", justifyContent: "center" }}>
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <Card
-            sx={{
-              margin: "auto",
-              p: 4,
-              maxWidth: { xs: "100%", sm: 400 },
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-            }}>
-            <Typography variant="h5" sx={{ textAlign: "center" }}>
-              Sistem Administrasi
-            </Typography>
+      <Container
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+        <Toolbar />
+        <Card
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            p: 4,
+            width: { xs: "100%", md: 400 },
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}>
+          <Typography variant="h5" sx={{ textAlign: "center" }}>
+            Sistem Administrasi
+          </Typography>
 
-            <TextField
-              required
-              id="email"
-              label="Email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
+          <TextField
+            fullWidth
+            required
+            id="email"
+            label="Email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
 
-            <TextField
-              required
-              id="password"
-              label="Password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
+          <TextField
+            fullWidth
+            required
+            id="password"
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
 
-            {error && <Typography color="error">{error}</Typography>}
+          {error && <Typography color="error">{error}</Typography>}
 
-            <Button variant="contained" type="submit" loading={loading}>
-              Login
+          <Button variant="contained" type="submit" loading={loading}>
+            Login
+          </Button>
+
+          <Typography variant="body2" sx={{ textAlign: "center" }}>
+            Belum punya akun?{" "}
+            <Button variant="text" onClick={() => navigate("/signup")}>
+              Daftar
             </Button>
-
-            <Typography variant="body2" sx={{ textAlign: "center" }}>
-              Belum punya akun?{" "}
-              <Button variant="text" onClick={() => navigate("/signup")}>
-                Daftar
-              </Button>
-            </Typography>
-          </Card>
-        </form>
+          </Typography>
+        </Card>
       </Container>
     </Box>
   );

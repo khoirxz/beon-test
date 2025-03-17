@@ -26,6 +26,7 @@ const ServiceForm = () => {
   const [type, setType] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const authState = useSelector((state: RootState) => state.auth);
   const { id } = useParams<string>();
@@ -33,6 +34,7 @@ const ServiceForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const response = await api.get(`services/${id}`, {
           headers: {
             Authorization: `Bearer ${authState.token}`,
@@ -46,6 +48,8 @@ const ServiceForm = () => {
         setType(response.data.type);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -58,6 +62,8 @@ const ServiceForm = () => {
     event.preventDefault();
 
     try {
+      setLoading(true);
+
       let response;
 
       if (id) {
@@ -104,11 +110,13 @@ const ServiceForm = () => {
         setMessage("Terjadi kesalahan");
       }
       setOpen(true);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Layout>
+    <Layout loading={loading}>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         justifyContent={{ xs: "flex-start", sm: "space-between" }}

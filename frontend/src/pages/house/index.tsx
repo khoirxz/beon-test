@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router";
 
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -12,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
+import Home from "@mui/icons-material/Home";
 
 import Layout from "../../layout/layout";
 import api from "../../api";
@@ -86,9 +88,21 @@ const HouseList = () => {
       </Stack>
 
       <DataGrid
+        sx={{
+          maxHeight: 450,
+        }}
         rows={data}
         columns={[
           ...columns,
+          {
+            field: "detail",
+            headerName: "Detail",
+            renderCell: (params) => (
+              <ButtonGroup>
+                <ButtonDetail data={params.row.residents} />
+              </ButtonGroup>
+            ),
+          },
           {
             field: "action",
             headerName: "Aksi",
@@ -146,6 +160,46 @@ const ButtonDelete: React.FC<{
               color="error"
               onClick={() => handleDelete(id)}>
               Hapus
+            </Button>
+          </Stack>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+const ButtonDetail: React.FC<{ data: House["residents"] }> = ({ data }) => {
+  const [open, setOpen] = useState<boolean>(false);
+
+  return (
+    <div>
+      <IconButton onClick={() => setOpen(true)}>
+        <Home />
+      </IconButton>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogContent sx={{ p: 3, width: { xs: "100%", md: 600 } }}>
+          <Typography>Tempat tinggal</Typography>
+          <Box mt={2}>
+            <Home />
+            {data.length === 0 ? (
+              <Typography>Tidak ada data</Typography>
+            ) : (
+              <Stack>
+                {data.map((item) => (
+                  <Box key={item.id}>
+                    <Typography>{item.name}</Typography>
+                    <Typography>{item.description}</Typography>
+                  </Box>
+                ))}
+              </Stack>
+            )}
+          </Box>
+          <Stack direction={"row"} justifyContent={"flex-end"} mt={2}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => setOpen(false)}>
+              Tutup
             </Button>
           </Stack>
         </DialogContent>

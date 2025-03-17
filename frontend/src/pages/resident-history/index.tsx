@@ -89,6 +89,9 @@ const ResidenHistorytList = () => {
       </Stack>
 
       <DataGrid
+        sx={{
+          maxHeight: 450,
+        }}
         rows={data}
         columns={[
           ...columns,
@@ -141,7 +144,10 @@ const ButtonDelete: React.FC<{
         <DeleteIcon color="error" />
       </IconButton>
       <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogContent>
+        <DialogContent
+          sx={{
+            maxHeight: 400,
+          }}>
           <Typography>Apakah anda yakin ingin menghapus data ini?</Typography>
           <Stack direction={"row"} justifyContent={"flex-end"} mt={2}>
             <Button
